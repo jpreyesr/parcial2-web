@@ -39,7 +39,7 @@ export class TokenService {
   }
 
 
-  async update(id: number): Promise<void> {
+  async update(id: number, updateTokenDto : UpdateTokenDto) {
     try {
       const token = await this.tokenRepository.findOneBy({ id });
   

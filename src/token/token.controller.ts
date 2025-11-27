@@ -19,7 +19,7 @@ export class TokenController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTokenDto: UpdateTokenDto) {
-    return this.tokenService.update(+id);
+    return this.tokenService.update(+id, updateTokenDto);
   }
 
 }
