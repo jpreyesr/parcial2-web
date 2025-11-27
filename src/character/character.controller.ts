@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CharacterService } from './character.service';
 import { CreateCharacterDto } from './dto/create-character.dto';
-import { UpdateCharacterDto } from './dto/update-character.dto';
+import { AuthGuard } from 'src/guards/api-token/api-token.guard';
 
+@UseGuards(AuthGuard)
 @Controller('character')
 export class CharacterController {
   constructor(private readonly characterService: CharacterService) {}
