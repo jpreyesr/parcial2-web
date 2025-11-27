@@ -13,13 +13,13 @@ export class TokenController {
   }
 
   @Get('/token/:idToken')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('idToken') id: string) {
     return this.tokenService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTokenDto: UpdateTokenDto) {
-    return this.tokenService.update(+id, updateTokenDto);
+  @Patch('/token/reduce/:idToken')
+  reduceReqLeft(@Param('idToken') id: string) {
+    return this.tokenService.reduceReqLeft(+id);
   }
 
 }

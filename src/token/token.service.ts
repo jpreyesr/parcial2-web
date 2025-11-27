@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTokenDto } from './dto/create-token.dto';
-import { UpdateTokenDto } from './dto/update-token.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Token } from './entities/token.entity';
@@ -27,7 +26,7 @@ export class TokenService {
   async findOne(id: number) {
     try{
       const token = await this.tokenRepository.findOneBy({id})
-      if(!token){
+      if (!token || (!token.active && token.reqLeft <= 0)) {
         throw new NotFoundException(`Objeto no fue encontrado`)
       }
       return token;
@@ -39,18 +38,23 @@ export class TokenService {
   }
 
 
-  async update(id: number, updateTokenDto : UpdateTokenDto) {
+  async reduceReqLeft(id: number): Promise<{ message: string; token: Token }> {
     try {
       const token = await this.tokenRepository.findOneBy({ id });
-  
       if (!token) {
-        throw new NotFoundException(`Objeto no fue encontrado`);
+        throw new NotFoundException(`Token con ID ${id} no fue encontrado`);
       }
+      if (token.reqLeft <= 0) {
+        throw new Error(`El token elegido ya no tiene solicitudes restantes`);
+      }
+
       token.reqLeft -= 1;
-  
+
       await this.tokenRepository.save(token);
+  
+      return { message: 'reqLeft reducido exitosamente', token };
     } catch (error) {
-      console.error('Error al reducir:', error);
+      console.error('error al reducir reqLeft:', error);
       throw error;
     }
   }

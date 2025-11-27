@@ -1,6 +1,8 @@
 export class CreateTokenDto {
 
-    token : string;
+
+    
+    token? : string;
  
     active : boolean;
  
