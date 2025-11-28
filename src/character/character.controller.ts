@@ -20,7 +20,7 @@ export class CharacterController {
 
   @Patch(':id/favorites/:locationId')
   async addFavorite(@Param('id') id: number,@Param('locationId') locationId: number) {
-    return this.characterService.addFavorite(id, locationId);
+    return this.characterService.addFavorite(+id, +locationId);
   }
 
 }

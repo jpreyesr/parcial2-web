@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTokenDto } from './dto/create-token.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Token } from './entities/token.entity';
@@ -12,35 +11,43 @@ export class TokenService {
     private readonly tokenRepository: Repository<Token>
   ) {}
 
-  async createToken(createTokenDto: CreateTokenDto) {
-    try {
-        const token = this.tokenRepository.create(createTokenDto);
-        await this.tokenRepository.save(token);
-        return token;  
-    } catch (error) {
-      console.error('error creando token', error);
-      throw error; 
-    }
+  async createToken() {
+    const token = this.generateRandomToken();
+    const newToken = this.tokenRepository.create({ token: token });
+    return this.tokenRepository.save(newToken);
   }
 
-  async findOne(id: number) {
-    try{
-      const token = await this.tokenRepository.findOneBy({id})
-      if (!token || (!token.active && token.reqLeft <= 0)) {
-        throw new NotFoundException(`Objeto no fue encontrado`)
-      }
-      return token;
-    }
-    catch(error){
-      console.error('error buscando token', error);
-      throw error; 
-    }
+  // async createToken() {
+  //   const token = this.generateRandomToken();
+  //   const newToken = this.tokenRepository.create({
+  //     token,
+  //     active: true,
+  //     reqLeft: 10,
+  //   });
+  //   return this.tokenRepository.save(newToken);
+  // }
+
+  private generateRandomToken(): string {
+    return Math.random().toString(36).substring(2, 18);
   }
 
-
-  async reduceReqLeft(id: number): Promise<{ message: string; token: Token }> {
+  async isTokenValid(id: string): Promise<boolean> {
     try {
       const token = await this.tokenRepository.findOneBy({ id });
+      if (token && token.active && token.reqLeft > 0) {
+        return true; 
+      }
+      return false; 
+    } catch (error) {
+      console.error('Error verificando el token:', error);
+      throw new NotFoundException(`Error verificando el token con ID: ${id}`);
+    }
+  }
+
+
+  async reduceReqLeft(id: string): Promise<{ message: string; token: Token }> {
+    try {
+      const token = await this.tokenRepository.findOne({ where: { id } });
       if (!token) {
         throw new NotFoundException(`Token con ID ${id} no fue encontrado`);
       }

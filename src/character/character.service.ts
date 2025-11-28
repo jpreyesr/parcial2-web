@@ -17,9 +17,9 @@ export class CharacterService {
 
   async createCharacter(createCharacterDto: CreateCharacterDto) {
     try {
-        const token = this.characterRepository.create(createCharacterDto);
-        await this.characterRepository.save(token);
-        return token; 
+        const character = this.characterRepository.create(createCharacterDto);
+        await this.characterRepository.save(character);
+        return character; 
       
     } catch (error) {
       console.error('error creando el personaje', error);

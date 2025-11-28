@@ -7,11 +7,11 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
-    const tokenId = Number(req.headers['token-id']);
+    const tokenId = String(req.headers['token-id']);
 
     if (!tokenId) throw new UnauthorizedException('Token requerido');
 
-    const isValid = await this.tokenService.findOne(tokenId);
+    const isValid = await this.tokenService.isTokenValid(tokenId);
     if (!isValid) {
       throw new UnauthorizedException('Api token invalido');
     }

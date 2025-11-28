@@ -1,6 +1,7 @@
 import { Character } from "src/character/entities/character.entity";
-import { Column, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
+@Entity()
 export class Location {
 
     @PrimaryGeneratedColumn()
