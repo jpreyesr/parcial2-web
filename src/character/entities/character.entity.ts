@@ -1,20 +1,27 @@
 import { Location } from "src/location/entities/location.entity";
-import { JoinColumn, JoinTable, ManyToMany, OneToOne } from "typeorm";
+import { Column, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export class Character {
 
+    @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
     name:string;
+
+    @Column()
     salary:number;
+
+    @Column()
     employee : boolean;
-    property : Location;
-    favPlaces : Location[];
 
     @OneToOne(() => Location, location => location.owner)
-    character.property: Location;
+    @JoinColumn()
+    location : Location;
 
     @ManyToMany(() => Location, location => location.favCharacters)
     @JoinTable()
-    favPlaces: Location[];
+    favPlaces : Location[];
+ 
 
 }

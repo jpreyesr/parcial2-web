@@ -8,14 +8,14 @@ import { AuthGuard } from 'src/guards/api-token/api-token.guard';
 export class CharacterController {
   constructor(private readonly characterService: CharacterService) {}
 
-  @Post('/character')
+  @Post()
   create(@Body() createCharacterDto: CreateCharacterDto) {
     return this.characterService.createCharacter(createCharacterDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.characterService.findOne(+id);
+  @Get(':id/taxes')
+  taxesPerCharacter(@Param('id') id: string) {
+    return this.characterService.findTaxesPerCharacter(+id);
   }
 
   @Patch(':id/favorites/:locationId')

@@ -1,42 +1,34 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLocationDto } from './dto/create-location.dto';
-import { UpdateLocationDto } from './dto/update-location.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Character } from 'src/character/entities/character.entity';
+import { Location } from './entities/location.entity';
 
 @Injectable()
 export class LocationService {
 
   constructor(
     @InjectRepository(Location)
-    private readonly locationRepository: Repository<Location>
+    private readonly locationRepository: Repository<Location>,
+    @InjectRepository(Character)
+    private readonly characterRepository: Repository<Character>,
   ) {}
 
-  async createLocation(CreateLocationDto: CreateLocationDto) {
-    try {
-        const location = this.locationRepository.create(this.createLocationDto);
-        await this.locationRepository.save(location);
-        return location; 
-      
-    } catch (error) {
-      console.error('error creando la locaicon', error);
-      throw error; 
+  async create(createLocationDto: CreateLocationDto) {
+    const owner = await this.characterRepository.findOne({ where: { id: createLocationDto.ownerId } });
+    if (!owner) {
+      throw new NotFoundException('Owner character not found');
     }
-
-  findAll() {
-    return `This action returns all location`;
+    const newLocation = this.locationRepository.create({
+      ...createLocationDto,
+      owner,
+    });
+    return this.locationRepository.save(newLocation);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} location`;
+  async findAll() {
+    return await this.locationRepository.find({ relations: { favCharacters: true } });
   }
 
-  update(id: number, updateLocationDto: UpdateLocationDto) {
-    return `This action updates a #${id} location`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} location`;
-  }
 }
-ssssss

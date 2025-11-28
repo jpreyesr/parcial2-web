@@ -1,7 +1,17 @@
+import { IsNumber, IsString } from "class-validator";
+
 export class CreateLocationDto {
 
-    salary:number;
-    employee : boolean;
-    property : number;
-    favPlaces : number[];
+    @IsString()
+    name : string;
+
+    @IsString()
+    type : string;
+
+    @IsNumber()
+    cost : number;
+
+    @IsNumber()
+    ownerId : number;
+
 }

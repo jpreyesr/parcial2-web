@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCharacterDto } from './dto/create-character.dto';
-import { UpdateCharacterDto } from './dto/update-character.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Character } from './entities/character.entity';
 import { Repository } from 'typeorm';
@@ -32,19 +31,19 @@ export class CharacterService {
     try {
       const character = await this.characterRepository.findOne({
         where: { id },
-        relations: ['favorites'], 
+        relations: ['favPlaces'], 
       });
 
       if (!character) {
-        throw new NotFoundException(`Personaje con ID ${id} no fue encontrado`);
+        throw new NotFoundException(`personaje no encontrado`);
       }
       const location = await this.locationRepository.findOneBy({ id: locationId });
 
       if (!location) {
-        throw new NotFoundException(`Locación con ID ${locationId} no fue encontrada`);
+        throw new NotFoundException(`locacion no encontrada`);
       }
       if (character.favPlaces.some(fav => fav.id === locationId)) {
-        throw new Error(`La locación con ID ${locationId} ya está en los favoritos del personaje`);
+        throw new Error(`la locación  ya está en los favoritos del personaje`);
       }
 
       character.favPlaces.push(location);
@@ -56,39 +55,28 @@ export class CharacterService {
     }
   }
 
-  async calculateTaxes(id: number) {
-    const character = await this.characterRepository.findOne({
-      where: { id },
-      relations: ['properties'], 
-    });
-  
-    if (!character) {
-      throw new NotFoundException(`Personaje con ID ${id} no fue encontrado`);
-    }
-  
-    if (!character.property {
-      return { taxDebt: 0 }; 
-    }
-
-    const COEF = character.employee? 0.08 : 0.03;
-
-    const taxDebt = character.property * (1 + COEF);
-  
-    return { taxDebt }; 
-  }
-
-  async findOne(id: number) {
+  async findTaxesPerCharacter(id: number) {
     try{
-      const character = await this.characterRepository.findOneBy({id})
-      if(!character){
-        throw new NotFoundException(`Character no fue encontrado`)
+
+      const character = await this.characterRepository.findOne({
+        where: { id },
+        relations: ['location'], 
+      });
+    
+      if (!character) {
+        throw new NotFoundException(`personaje no encontrado`);
       }
-      return character;
-    }
-    catch(error){
-      console.error('error buscando character', error);
+    
+      if (!character.location) {
+        return { taxDebt: 0 }; 
+      }
+  
+      const COEF = character.employee? 0.08 : 0.03;
+      const taxDebt = character.location.cost * (1 + COEF);
+      return { taxDebt }; 
+    } catch(error){
+      console.error('error calculando taxes', error);
       throw error; 
     }
   }
-
 }
