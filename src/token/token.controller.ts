@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards} from '@nestjs/common';
 import { TokenService } from './token.service';
+import { AuthGuard } from 'src/guards/api-token/api-token.guard';
 
-
+@UseGuards(AuthGuard)
 @Controller('token')
 export class TokenController {
   constructor(private readonly tokenService: TokenService) {}
